@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Marketing Content Generator - Pro Edition</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+
+        :root {
+            /* Default Light Mode */
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #ffffff;
+            --text-color: #1f2937;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+        }
+        .dark {
+            /* Dark Mode */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b; 
+            --text-color: #f3f4f6;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+        body {
+            font-family: 'Inter', 'Tajawal', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
+        }
+        .container-card {
+            background-color: var(--bg-secondary);
+            box-shadow: var(--card-shadow);
+        }
+        .loading-ring {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Rainbow Button Animation */
+        .btn-rainbow {
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            animation: rainbow 10s linear infinite;
+            border: none;
+            color: white;
+            transition: transform 0.2s;
+        }
+        .btn-rainbow:hover {
+            transform: scale(1.02);
+        }
+        @keyframes rainbow {
+            0% { background-position: 0 0; }
+            50% { background-position: 100% 0; }
+            100% { background-position: 0 0; }
+        }
+
+        /* Markdown Styles */
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+            color: #991b1c !important; /* Force Headings Color */
+            font-weight: 900;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            line-height: 1.2;
+        }
+        .markdown-body h1 { font-size: 2em; border-bottom: 2px solid #fee2e2; padding-bottom: 0.2em; }
+        
+        /* Paragraphs and Lists inherit color from parent (Green/Red/Gray) */
+        .markdown-body p { margin-bottom: 1em; line-height: 1.7; transition: color 0.3s; }
+        .markdown-body ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; transition: color 0.3s; }
+        .markdown-body strong { font-weight: 800; }
+        
+        /* Links in Markdown - Styled and force break */
+        .markdown-body a {
+            color: #2563eb;
+            text-decoration: underline;
+            font-weight: bold;
+            word-break: break-all;
+        }
+        .markdown-body a:hover {
+            color: #1d4ed8;
+        }
+        
+        /* Custom Colors for Human Score */
+        .text-human-green p, .text-human-green ul, .text-human-green li { color: #15803d; } /* green-700 */
+        .dark .text-human-green p, .dark .text-human-green ul, .dark .text-human-green li { color: #22c55e; } /* green-500 for dark mode readability */
+        
+        .text-human-red p, .text-human-red ul, .text-human-red li { color: #991b1c; } /* red-800 */
+        .dark .text-human-red p, .dark .text-human-red ul, .dark .text-human-red li { color: #f87171; } /* red-400 for dark mode */
+
+        /* Ensures LTR for all inputs/textareas for consistency */
+        input[type="text"], input[type="password"], textarea {
+            direction: ltr;
+            text-align: left;
+        }
+        /* Arabic Text Areas support RTL if needed */
+        textarea:lang(ar) { direction: rtl; text-align: right; }
+
+        .trend-title {
+            background: linear-gradient(90deg, #b91c1c, #c2410c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* --- FORCED LIGHT MODE FOR RESULTS AREA --- */
+        #results-area {
+            color: #1f2937; 
+        }
+        #results-area .markdown-body {
+            color: #1f2937;
+        }
+
+        /* Social Buttons Hover Effects - Smaller Size */
+        .btn-social { transition: all 0.2s; cursor: pointer; }
+        .btn-social:hover { transform: translateY(-2px); opacity: 0.95; filter: brightness(1.1); }
+        .btn-social:active { transform: translateY(0); }
+
+        /* Video Tool Cards */
+        .tool-card {
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Nav Icon Hover */
+        .nav-icon:hover {
+            transform: scale(1.1);
+        }
+
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Hidden Audio Element for Generation Music -->
+    <audio id="gen-music" src="https://actions.google.com/sounds/v1/science_fiction/music_box_melody.ogg" preload="auto"></audio>
+
+    <div class="flex flex-col items-center py-10 px-4">
+        
+        <header class="text-center mb-10 w-full max-w-5xl">
+            <h1 class="text-5xl font-extrabold mb-4">
+                🚀 AI Marketing Campaign Generator
+            </h1>
+            <p id="header-subtitle" class="text-xl text-blue-700 dark:text-blue-400 font-medium max-w-2xl mx-auto">
+                <!-- هذا النص سيتم تعيينه ديناميكيًا بواسطة JavaScript -->
+            </p>
+        </header>
+
+        <main class="w-full max-w-5xl p-6 md:p-10 rounded-2xl container-card border border-gray-100 dark:border-slate-800">
+            
+            <!-- Global Toggles & Social Nav (API Key Moved Down) -->
+            <section class="mb-8 p-4 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 flex flex-col lg:flex-row items-center justify-between gap-4">
+                
+                <div class="flex flex-wrap items-center gap-4 w-full justify-center lg:justify-start">
+                    <!-- Toggles -->
+                    <div class="flex items-center gap-2">
+                        <button id="langToggle" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-bold" onclick="toggleLanguage()">
+                            EN / AR
+                        </button>
+                        <button id="darkToggle" class="px-3 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition" onclick="toggleTheme()">
+                            🌙 / ☀️
+                        </button>
+                    </div>
+
+                    <!-- Separator -->
+                    <div class="hidden md:block h-8 w-px bg-gray-300 dark:bg-gray-600 mx-2"></div>
+
+                    <!-- Dynamic Social Navigation (Initially Empty) -->
+                    <div id="top-social-nav" class="flex flex-wrap items-center gap-2 transition-all duration-500 opacity-0 transform translate-y-[-10px]">
+                        <!-- Icons will be injected here after generation -->
+                    </div>
+                </div>
+                
+            </section>
+
+            <!-- Input Section -->
+            <section class="space-y-6 mb-10">
+                <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl border-4 border-green-300 dark:border-green-700">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="product-label block text-gray-700 dark:text-gray-300 font-bold mb-2">Product Name & Description / اسم ووصف المنتج</label>
+                            <textarea id="product-description" rows="3" class="w-full p-3 border-2 border-gray-200 dark:border-slate-600 dark:bg-slate-700 rounded-xl focus:border-green-500 focus:ring-0 transition text-lg text-blue-700 dark:text-blue-300 font-bold italic" placeholder="مثال: ساعة ذكية مقاومة للماء مع تتبع صحي..."></textarea>
+                        </div>
+                        <div>
+                            <label class="link-label block text-gray-700 dark:text-gray-300 font-bold mb-2">Affiliate Link / رابط المنتج</label>
+                            <textarea id="affiliate-link" rows="3" class="w-full p-3 border-2 border-gray-200 dark:border-slate-600 dark:bg-slate-700 rounded-xl focus:border-green-500 focus:ring-0 transition text-lg text-left text-blue-700 dark:text-blue-300" placeholder="https://store.com/item"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rainbow Button Added -->
+                <button id="generate-button" class="btn-rainbow w-full py-5 text-white text-2xl font-black rounded-xl shadow-xl flex items-center justify-center gap-3" onclick="generateFullCampaign()">
+                    <span id="generate-text">✨ توليد الحملة</span>
+                    <div id="loading-indicator" class="hidden loading-ring"></div>
+                </button>
+
+                <!-- API Key Input MOVED HERE -->
+                <div class="w-full flex justify-center mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                    <div id="api-key-container" class="flex gap-2 w-full md:w-auto transition-all max-w-md">
+                        <input type="password" id="api-key-input" placeholder="Gemini API Key (Optional)" class="p-2 border rounded-lg w-full text-sm text-gray-800 bg-gray-50 focus:bg-white">
+                        <button id="save-key-button" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-slate-700 transition" onclick="saveApiKey()">Save</button>
+                    </div>
+                    
+                    <div id="key-status" class="hidden flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-bold border border-green-200">
+                        <span>✅ API Key Ready</span>
+                        <button onclick="resetKey()" class="text-xs text-red-600 hover:text-red-800 underline ml-2" title="Reset Key">Change</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <div id="results-area" class="space-y-12 hidden">
+                
+                <!-- 1. Headline -->
+                <div class="text-center py-10 border-b-4 border-gray-100 relative group" id="section-headline">
+                    <p class="text-gray-500 font-bold tracking-widest uppercase mb-2">Trend-Setting Headline</p>
+                    <h2 id="result-title" class="text-4xl md:text-5xl font-black trend-title leading-tight mb-6"></h2>
+                    <!-- Social Toolbar for Headline -->
+                    <div class="flex justify-center" id="toolbar-title"></div>
+                </div>
+
+                <!-- 2. Product Description -->
+                <div class="bg-blue-50 p-8 rounded-2xl border border-blue-100" id="section-description">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-bold text-blue-900 flex items-center gap-2">💎 Amazing Description</h3>
+                    </div>
+                    <div id="result-desc" class="text-lg leading-relaxed markdown-body mb-6"></div>
+                    <!-- Social Toolbar for Description -->
+                    <div id="toolbar-desc"></div>
+                </div>
+
+                <!-- 3. Social Media Posts (SPLIT BOXES) -->
+                <div class="grid grid-cols-1 gap-6">
+                    
+                    <!-- Visual (Instagram/FB) - Blue Boxes -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col" id="section-visual">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-bold text-pink-900 mb-2 text-center md:text-left">📸 Instagram & Facebook</h3>
+                            <div id="toolbar-social-visual"></div>
+                        </div>
+                        <!-- Container for separated posts -->
+                        <div id="result-social-visual-container" class="space-y-4"></div>
+                    </div>
+                    
+                    <!-- Text (X/LinkedIn) - Green Boxes -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col" id="section-text">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-bold text-slate-900 mb-2 text-center md:text-left">🐦 X (Twitter) & LinkedIn</h3>
+                            <div id="toolbar-social-text"></div>
+                        </div>
+                        <!-- Container for separated posts -->
+                        <div id="result-social-text-container" class="space-y-4"></div>
+                    </div>
+                </div>
+
+                <!-- 4. Keywords -->
+                <div class="bg-gray-900 p-8 rounded-2xl text-white shadow-lg">
+                    <h3 class="text-xl font-bold text-yellow-400 mb-4">🔥 Trending Keywords</h3>
+                    <div id="result-keywords" class="flex flex-wrap gap-3 mb-6"></div>
+                    <div id="toolbar-keywords"></div>
+                </div>
+
+                <!-- 5. Video Scripts & Recommendations -->
+                <div class="border-2 border-dashed border-gray-300 p-8 rounded-2xl" id="section-video">
+                    <h3 class="text-3xl font-bold text-gray-800 mb-6 text-center">🎬 Video Scripts</h3>
+                    
+                    <div class="grid grid-cols-1 gap-8 mb-8">
+                        <!-- Long Script (YouTube) -->
+                        <div id="section-video-long">
+                            <div class="mb-3">
+                                <h4 class="text-lg font-bold text-red-600 mb-2 uppercase text-center md:text-left">Long (YouTube)</h4>
+                                <div id="toolbar-script-long"></div>
+                            </div>
+                            <div id="result-script-long" class="bg-gray-50 p-4 rounded-xl h-auto text-sm border border-gray-200 markdown-body mb-4"></div>
+                        </div>
+
+                        <!-- Short Script (TikTok) -->
+                        <div id="section-video-short">
+                            <div class="mb-3">
+                                <h4 class="text-lg font-bold text-red-600 mb-2 uppercase text-center md:text-left">Short (TikTok/Reels)</h4>
+                                <div id="toolbar-script-short"></div>
+                            </div>
+                            <div id="result-script-short" class="bg-gray-50 p-4 rounded-xl h-auto text-sm border border-gray-200 markdown-body mb-4"></div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Tools Section (Linked from Top Nav) -->
+                    <div id="section-video-tools" class="bg-indigo-50 dark:bg-slate-700 p-6 rounded-xl border border-indigo-100 dark:border-slate-600">
+                        <h4 class="text-center text-indigo-900 dark:text-indigo-200 font-bold mb-4 flex items-center justify-center gap-2">
+                            <i class="fas fa-magic"></i> Recommended AI Video Tools
+                        </h4>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                            <a href="https://invideo.io/" target="_blank" class="tool-card bg-white dark:bg-slate-800 p-3 rounded-lg text-center border border-gray-200 dark:border-slate-600 hover:border-indigo-400">
+                                <span class="block text-indigo-600 dark:text-indigo-400 font-bold text-sm">InVideo AI</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Marketing</span>
+                            </a>
+                            <a href="https://www.capcut.com/tools/ai-video-generator" target="_blank" class="tool-card bg-white dark:bg-slate-800 p-3 rounded-lg text-center border border-gray-200 dark:border-slate-600 hover:border-indigo-400">
+                                <span class="block text-indigo-600 dark:text-indigo-400 font-bold text-sm">CapCut AI</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Editing</span>
+                            </a>
+                            <a href="https://runwayml.com/" target="_blank" class="tool-card bg-white dark:bg-slate-800 p-3 rounded-lg text-center border border-gray-200 dark:border-slate-600 hover:border-indigo-400">
+                                <span class="block text-indigo-600 dark:text-indigo-400 font-bold text-sm">Runway</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Cinematic</span>
+                            </a>
+                            <a href="https://lumalabs.ai/dream-machine" target="_blank" class="tool-card bg-white dark:bg-slate-800 p-3 rounded-lg text-center border border-gray-200 dark:border-slate-600 hover:border-indigo-400">
+                                <span class="block text-indigo-600 dark:text-indigo-400 font-bold text-sm">Luma</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Realism</span>
+                            </a>
+                             <a href="https://www.heygen.com/" target="_blank" class="tool-card bg-white dark:bg-slate-800 p-3 rounded-lg text-center border border-gray-200 dark:border-slate-600 hover:border-indigo-400">
+                                <span class="block text-indigo-600 dark:text-indigo-400 font-bold text-sm">HeyGen</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Avatars</span>
+                            </a>
+                            <a href="https://kling.kuaishou.com/en" target="_blank" class="tool-card bg-white dark:bg-slate-800 p-3 rounded-lg text-center border border-gray-200 dark:border-slate-600 hover:border-indigo-400">
+                                <span class="block text-indigo-600 dark:text-indigo-400 font-bold text-sm">Kling AI</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Advanced</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Article -->
+                <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl border-t-8 border-red-700 relative" id="section-article">
+                    <div class="flex flex-col mb-6">
+                        <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-4">
+                            <h3 class="text-3xl font-black text-gray-900">📝 Exclusive Article</h3>
+                            <div id="toolbar-article"></div>
+                        </div>
+                        
+                        <!-- AI Human Score Checker Section -->
+                        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 mt-2">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-blue-100 rounded-full text-blue-600">
+                                    <i class="fas fa-user-check fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 id="human-score-label" class="font-bold text-gray-800">Human Content Score</h4>
+                                    <p id="human-score-sub" class="text-xs text-gray-500">Check if the article sounds human-written.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                                <div id="score-display" class="hidden font-black text-xl px-3 py-1 rounded-lg border"></div>
+                                <button id="check-score-btn" onclick="checkHumanScore()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2" type="button">
+                                    <span>🔍 Check Score</span>
+                                </button>
+                                <button id="humanize-btn" onclick="humanizeArticle()" class="hidden bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2" type="button">
+                                    <i class="fas fa-magic"></i> <span>Humanize (Rewrite)</span>
+                                </button>
+                                <div id="score-loader" class="hidden loading-ring border-blue-600 border-t-transparent !w-6 !h-6"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="result-article" class="markdown-body text-lg text-gray-800 mb-8 transition-colors duration-300"></div>
+                </div>
+            
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
+        <i class="fas fa-check-circle text-green-400"></i> <span id="toast-msg">Copied successfully!</span>
+    </div>
+
+    <!-- Scroll Navigation Buttons -->
+    <div class="fixed bottom-5 left-5 z-40 flex flex-col gap-2">
+        <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all transform hover:scale-110 border border-white dark:border-slate-800" title="Scroll to Top">
+            <i class="fas fa-arrow-up text-xs"></i>
+        </button>
+        <button onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })" class="w-8 h-8 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all transform hover:scale-110 border border-white dark:border-slate-800" title="Scroll to Bottom">
+            <i class="fas fa-arrow-down text-xs"></i>
+        </button>
+    </div>
+
+    <script>
+        // ============================================
+        // 🔑 CONFIGURATION
+        // ============================================
+        const HARDCODED_KEY = "AIzaSyCIISiGWqkZZhBWHrBASBKFqbouQY8aVow"; 
+        
+        let currentLang = 'ar'; 
+        let apiKey = ''; 
+        let currentLink = ''; 
+        
+        const MODEL_NAME = 'gemini-2.5-flash-preview-09-2025';
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`;
+
+        const CAMPAIGN_SCHEMA = {
+            type: "OBJECT",
+            properties: {
+                headline: { type: "STRING", description: "A viral, catchy, trend-setting headline (max 10 words)" },
+                description: { type: "STRING", description: "A persuasive, emotional product description using bullet points and emojis (Markdown format)" },
+                social_visual: { type: "STRING", description: "3 separate, concise, punchy captions for Instagram/Facebook. Each post MUST be separated by '---'. Include emojis. DO NOT include the full URL inside the caption body. Instead, use phrases like 'Link in Bio 🔗' or 'Link in 1st comment 👇'. (plain text)" },
+                social_text: { type: "STRING", description: "2 separate, professional, concise posts for Twitter/LinkedIn. Each post MUST be separated by '---'. Include emojis. Place the raw affiliate link ONLY at the very end of the post after the hashtags." },
+                keywords: { type: "STRING", description: "10 high-volume SEO keywords separated by commas (plain text)" },
+                script_short: { type: "STRING", description: "A 30-second TikTok/Reels script (Markdown format: Scene -> Audio)" },
+                script_long: { type: "STRING", description: "A brief outline for a YouTube review video (Markdown format)" },
+                article: { type: "STRING", description: "A comprehensive, 2000-word, highly professional blog post optimizing for SEO (use H2, H3 headings). Discuss the problem and solution deeply. IMPORTANT: You MUST hide the raw affiliate URL. Use Markdown [Anchor Text](URL) format for all links." },
+            },
+            propertyOrdering: ["headline", "description", "social_visual", "social_text", "keywords", "script_short", "script_long", "article"]
+        };
+
+        // Global Content Store to avoid passing huge strings in HTML
+        window.generatedContentStore = {};
+        let currentArticleText = "";
+
+        // === INITIALIZATION ===
+        document.addEventListener('DOMContentLoaded', () => {
+            const renderer = {
+                link(href, title, text) {
+                    return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+                }
+            };
+            marked.use({ renderer });
+
+            initializeKeyLogic();
+            toggleLanguage(true);
+        });
+
+        function initializeKeyLogic() {
+            let foundKey = null;
+            if (HARDCODED_KEY && HARDCODED_KEY !== "PASTE_YOUR_GEMINI_KEY_HERE" && HARDCODED_KEY.trim() !== "") {
+                foundKey = HARDCODED_KEY;
+            } else if (apiKey && apiKey.trim() !== '') {
+                foundKey = apiKey;
+            } else {
+                const savedKey = localStorage.getItem('gemini_api_key');
+                if (savedKey) foundKey = savedKey;
+            }
+
+            if (foundKey) {
+                apiKey = foundKey;
+                hideInputAndShowReady();
+            } else {
+                showInput();
+            }
+        }
+
+        function hideInputAndShowReady() {
+            document.getElementById('api-key-container').style.display = 'none';
+            document.getElementById('key-status').classList.remove('hidden');
+            document.getElementById('key-status').classList.add('flex');
+        }
+
+        function showInput() {
+            document.getElementById('api-key-container').style.display = 'flex';
+            document.getElementById('key-status').classList.add('hidden');
+            document.getElementById('key-status').classList.remove('flex');
+        }
+
+        function resetKey() {
+            localStorage.removeItem('gemini_api_key');
+            apiKey = '';
+            if (HARDCODED_KEY && HARDCODED_KEY !== "PASTE_YOUR_GEMINI_KEY_HERE") {
+                alert(currentLang === 'ar' ? "المفتاح مدمج في الكود." : "Key is hardcoded.");
+                return;
+            }
+            showInput();
+            document.getElementById('api-key-input').value = '';
+        }
+
+        function saveApiKey() {
+            const input = document.getElementById('api-key-input');
+            const key = input.value.trim();
+            if(key) {
+                apiKey = key;
+                localStorage.setItem('gemini_api_key', apiKey);
+                hideInputAndShowReady();
+                showToast(currentLang === 'ar' ? "تم حفظ المفتاح بنجاح!" : "API Key Saved!");
+            }
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function toggleLanguage(isInitial = false) {
+            if (isInitial) {
+                currentLang = 'ar'; 
+                document.dir = 'rtl';
+                updateUILanguage();
+                return;
+            } else {
+                currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            }
+            document.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            updateUILanguage();
+            if (!isInitial) {
+                showToast(currentLang === 'ar' ? `تم تبديل اللغة إلى ${currentLang === 'ar' ? 'العربية' : 'الإنجليزية'}` : `Language switched to ${currentLang === 'en' ? 'English' : 'Arabic'}`);
+            }
+        }
+
+        function updateUILanguage() {
+            const ar = currentLang === 'ar';
+            document.getElementById('langToggle').innerText = ar ? 'EN / AR' : 'AR / EN';
+            document.getElementById('generate-text').innerText = ar ? '✨ توليد الحملة' : '✨ Generate Campaign';
+            const subtitleText = ar 
+                ? 'إنشاء حملة تسويقية متكاملة (عناوين، مقالات، سكريبتات، كلمات مفتاحية) وتوزيعها.'
+                : 'Generate a complete, integrated marketing campaign (headlines, articles, scripts, keywords) and distribution strategy.';
+            document.getElementById('header-subtitle').innerText = subtitleText;
+            document.querySelector('.product-label').innerText = ar ? 'اسم ووصف المنتج' : 'Product Name & Description';
+            document.querySelector('.link-label').innerText = ar ? 'رابط المنتج' : 'Affiliate Link';
+            document.getElementById('product-description').placeholder = ar ? 'مثال: ساعة ذكية مقاومة للماء مع تتبع صحي...' : 'Example: Water-resistant smart watch with health tracking...';
+            
+            const humanLabel = document.getElementById('human-score-label');
+            const humanSub = document.getElementById('human-score-sub');
+            if (humanLabel) {
+                humanLabel.innerText = ar ? 'فحص بشرية النص' : 'Human Content Score';
+                humanSub.innerText = ar ? 'تأكد من أن المقال يبدو مكتوباً بواسطة بشر.' : 'Check if the article sounds human-written.';
+            }
+        }
+
+        // === API CALLS ===
+        async function callGeminiApi(prompt, keyToUse, schema = null, retries = 5, delay = 5000) {
+            if (!keyToUse) throw new Error(currentLang === 'ar' ? "المفتاح مفقود." : "Key is missing.");
+            
+            const fullApiUrl = `${API_URL}?key=${keyToUse}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }]
+            };
+
+            if (schema) {
+                payload.generationConfig = {
+                    responseMimeType: "application/json",
+                    responseSchema: schema
+                };
+            }
+
+            for (let i = 0; i <= retries; i++) {
+                try {
+                    const response = await fetch(fullApiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        if (response.status === 429 && i < retries) {
+                            let retryDelay = delay;
+                            if (data.error && data.error.message) {
+                                const match = data.error.message.match(/retry in ([\d\.]+)s/);
+                                if (match && match[1]) {
+                                    retryDelay = Math.ceil(parseFloat(match[1]) * 1000) + 2000;
+                                }
+                            }
+                            const waitSeconds = Math.ceil(retryDelay / 1000);
+                            showToast(currentLang === 'ar' ? 
+                                `تجاوز الحصة (429). إعادة المحاولة بعد ${waitSeconds} ثانية...` : 
+                                `Quota exceeded (429). Retrying in ${waitSeconds}s...`);
+                            console.warn(`429 Hit. Waiting ${retryDelay}ms before retry.`);
+                            await new Promise(resolve => setTimeout(resolve, retryDelay));
+                            delay *= 2; 
+                            continue;
+                        }
+                        throw new Error(`API Error: ${response.status} - ${data.error?.message || 'Unknown error'}`);
+                    }
+                    
+                    if (data.candidates && data.candidates[0].content) {
+                        const text = data.candidates[0].content.parts[0].text;
+                        return schema ? JSON.parse(text) : text;
+                    } else {
+                         throw new Error("No response from Gemini.");
+                    }
+                } catch (error) {
+                    if (i === retries) throw error;
+                    if (!error.message.includes('API Error') || error.message.includes('429')) {
+                         console.warn(`Network/429 Error. Retrying in ${delay}ms...`);
+                         await new Promise(resolve => setTimeout(resolve, delay));
+                         delay *= 2;
+                    } else {
+                        throw error;
+                    }
+                }
+            }
+        }
+
+        // === HUMAN SCORE LOGIC ===
+        async function checkHumanScore() {
+            if (!currentArticleText) {
+                showToast(currentLang === 'ar' ? "لا يوجد مقال للفحص!" : "No article to check!");
+                return;
+            }
+
+            const scoreDisplay = document.getElementById('score-display');
+            const checkBtn = document.getElementById('check-score-btn');
+            const humanizeBtn = document.getElementById('humanize-btn');
+            const loader = document.getElementById('score-loader');
+            const articleDiv = document.getElementById('result-article');
+
+            checkBtn.classList.add('hidden');
+            scoreDisplay.classList.add('hidden');
+            humanizeBtn.classList.add('hidden');
+            loader.classList.remove('hidden');
+
+            const prompt = `
+                Analyze the following text and estimate a 'Human Content Score' percentage from 0 to 100.
+                Return ONLY a JSON object: {"score": number}.
+                Text: "${currentArticleText.substring(0, 3000)}"
+            `;
+
+            try {
+                const result = await callGeminiApi(prompt, apiKey, {
+                    type: "OBJECT",
+                    properties: { score: { type: "INTEGER" } }
+                });
+
+                const score = result.score;
+                
+                loader.classList.add('hidden');
+                scoreDisplay.classList.remove('hidden');
+                scoreDisplay.innerText = `${score}% Human`;
+
+                if (score >= 85) {
+                    scoreDisplay.className = "font-black text-xl px-4 py-2 rounded-lg border bg-green-100 text-green-700 border-green-300";
+                    articleDiv.classList.remove('text-gray-800', 'text-human-red');
+                    articleDiv.classList.add('text-human-green');
+                    showToast(currentLang === 'ar' ? "ممتاز! النص يبدو بشرياً جداً. ✅" : "Great! Text looks very human. ✅");
+                } else {
+                    scoreDisplay.className = "font-black text-xl px-4 py-2 rounded-lg border bg-red-100 text-red-700 border-red-300";
+                    articleDiv.classList.remove('text-gray-800', 'text-human-green');
+                    articleDiv.classList.add('text-human-red'); 
+                    humanizeBtn.classList.remove('hidden');
+                    showToast(currentLang === 'ar' ? "النسبة منخفضة. يفضل إعادة الصياغة. ⚠️" : "Low score. Consider rewriting. ⚠️");
+                }
+
+            } catch (e) {
+                console.error(e);
+                loader.classList.add('hidden');
+                checkBtn.classList.remove('hidden');
+                showToast("Error checking score.");
+            }
+        }
+
+        async function humanizeArticle() {
+            if (!currentArticleText) return;
+
+            const humanizeBtn = document.getElementById('humanize-btn');
+            const loader = document.getElementById('score-loader');
+            const articleDiv = document.getElementById('result-article');
+            
+            humanizeBtn.classList.add('hidden');
+            loader.classList.remove('hidden');
+            
+            showToast(currentLang === 'ar' ? "جاري إعادة الصياغة بأسلوب بشري..." : "Rewriting in human style...");
+
+            const prompt = `
+                Rewrite the following article to sound 100% human-written. 
+                Use varied sentence length, natural flow, idioms, and high burstiness. 
+                IMPORTANT: Ensure the affiliate link "${currentLink}" is embedded naturally into the text using Markdown links. Do NOT show the raw URL.
+                Output ONLY the rewritten article in Markdown.
+                Article: "${currentArticleText}"
+            `;
+
+            try {
+                const resultText = await callGeminiApi(prompt, apiKey); 
+                
+                currentArticleText = resultText;
+                articleDiv.innerHTML = marked.parse(resultText);
+                window.generatedContentStore['toolbar-article'] = resultText; // Update store
+                
+                articleDiv.classList.remove('text-gray-800', 'text-human-red');
+                articleDiv.classList.add('text-human-green');
+                
+                loader.classList.add('hidden');
+                const scoreDisplay = document.getElementById('score-display');
+                scoreDisplay.classList.remove('hidden');
+                scoreDisplay.innerText = "98% Human";
+                scoreDisplay.className = "font-black text-xl px-4 py-2 rounded-lg border bg-green-100 text-green-700 border-green-300";
+                
+                showToast(currentLang === 'ar' ? "تم التحديث بنجاح! النسبة الآن ممتازة. 🚀" : "Updated! Score is now excellent. 🚀");
+
+            } catch (e) {
+                console.error(e);
+                loader.classList.add('hidden');
+                humanizeBtn.classList.remove('hidden');
+                showToast("Error rewriting text.");
+            }
+        }
+
+        // === MAIN GENERATION ===
+        async function generateFullCampaign() {
+            const audio = document.getElementById('gen-music');
+            if(audio) audio.play().catch(e => console.log("Audio play failed:", e));
+
+            const product = document.getElementById('product-description').value;
+            const link = document.getElementById('affiliate-link').value;
+            currentLink = link;
+            
+            let keyToUse = apiKey;
+            if (!keyToUse) {
+                const inputKey = document.getElementById('api-key-input').value.trim();
+                if (inputKey) keyToUse = inputKey;
+            }
+
+            if (!product) {
+                showToast(currentLang === 'ar' ? "يرجى إدخال تفاصيل المنتج" : "Please enter product details");
+                return;
+            }
+            if (!keyToUse) {
+                showToast(currentLang === 'ar' ? "الرجاء إدخال مفتاح API أولاً." : "Please enter API key first.", true);
+                return;
+            }
+
+            document.getElementById('generate-button').disabled = true;
+            document.getElementById('loading-indicator').classList.remove('hidden');
+            document.getElementById('results-area').classList.add('hidden');
+            document.getElementById('check-score-btn').classList.remove('hidden');
+            document.getElementById('score-display').classList.add('hidden');
+            document.getElementById('humanize-btn').classList.add('hidden');
+            document.getElementById('top-social-nav').classList.add('opacity-0', 'translate-y-[-10px]');
+            
+            const articleDiv = document.getElementById('result-article');
+            articleDiv.classList.remove('text-human-green', 'text-human-red');
+            articleDiv.classList.add('text-gray-800');
+
+            const prompt = `
+                Act as a world-class Marketing Expert. Generate a full, integrated campaign for:
+                Product: "${product}"
+                Affiliate Link: "${link}"
+                Target Language: ${currentLang === 'ar' ? 'Arabic' : 'English'}.
+
+                Constraints:
+                1. Ensure all content is in ${currentLang === 'ar' ? 'Arabic' : 'English'}.
+                2. Article: ~2000 words, highly professional, problem-solution format. optimize for SEO. Use H2, H3.
+                3. **CRITICAL**: Embed the affiliate link '${link}' naturally into the article text using Markdown [Anchor Text](${link}) format. Do NOT simply paste the raw URL.
+                4. Social Media Posts must be concise, punchy, and engaging.
+                5. **SOCIAL LINK RULE**: 
+                   - For Instagram/Facebook: Do NOT put the raw URL in the text body. Use "Link in Bio" or "Check 1st Comment".
+                   - For Twitter/LinkedIn: Place the link at the very END of the post, preceded by a newline.
+                6. SEPARATION: In the social_visual and social_text fields, return multiple posts separated by the distinct delimiter '---'.
+                7. Return structured JSON matching the defined schema.
+            `;
+
+            try {
+                const result = await callGeminiApi(prompt, keyToUse, CAMPAIGN_SCHEMA);
+                
+                currentArticleText = result.article || "";
+
+                document.getElementById('result-title').innerText = result.headline || '';
+                document.getElementById('result-desc').innerHTML = marked.parse(result.description || '');
+                
+                renderFormattedPosts(result.social_visual, 'result-social-visual-container', 'visual');
+                renderFormattedPosts(result.social_text, 'result-social-text-container', 'text');
+                
+                const kwContainer = document.getElementById('result-keywords');
+                kwContainer.innerHTML = '';
+                (result.keywords || '').split(',').forEach(kw => {
+                    if (kw.trim()) {
+                        kwContainer.innerHTML += `<span class="bg-gray-700 px-3 py-1 rounded-full text-sm">${kw.trim()}</span>`;
+                    }
+                });
+
+                document.getElementById('result-script-short').innerHTML = marked.parse(result.script_short || '');
+                document.getElementById('result-script-long').innerHTML = marked.parse(result.script_long || '');
+                document.getElementById('result-article').innerHTML = marked.parse(result.article || '');
+
+                // Store content in global object
+                window.generatedContentStore['toolbar-title'] = result.headline;
+                window.generatedContentStore['toolbar-desc'] = result.description;
+                window.generatedContentStore['toolbar-social-visual'] = result.social_visual;
+                window.generatedContentStore['toolbar-social-text'] = result.social_text;
+                window.generatedContentStore['toolbar-keywords'] = result.keywords;
+                window.generatedContentStore['toolbar-script-short'] = result.script_short;
+                window.generatedContentStore['toolbar-script-long'] = result.script_long;
+                window.generatedContentStore['toolbar-article'] = result.article;
+
+                renderSocialToolbar('toolbar-title', 'general');
+                renderSocialToolbar('toolbar-desc', 'copyOnly');
+                renderSocialToolbar('toolbar-social-visual', 'visual'); 
+                renderSocialToolbar('toolbar-social-text', 'text');
+                renderSocialToolbar('toolbar-keywords', 'copyOnly');
+                renderSocialToolbar('toolbar-script-short', 'video_short'); 
+                renderSocialToolbar('toolbar-script-long', 'video_long'); 
+                renderSocialToolbar('toolbar-article', 'article'); 
+
+                renderTopSocialNav();
+
+                document.getElementById('results-area').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('results-area').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+
+            } catch (error) {
+                console.error("Gemini Generation Error:", error);
+                showToast((currentLang === 'ar' ? "خطأ: " : "Error: ") + error.message);
+            } finally {
+                if(audio) audio.pause();
+                document.getElementById('generate-button').disabled = false;
+                document.getElementById('loading-indicator').classList.add('hidden');
+            }
+        }
+        
+        function renderFormattedPosts(textRaw, containerId, type) {
+            const container = document.getElementById(containerId);
+            if (!textRaw) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let posts = textRaw.includes('---') ? textRaw.split('---') : textRaw.split('\n\n');
+            
+            let bgClass = 'bg-green-50 border-green-400';
+            let textClass = 'text-green-900';
+            let btnClass = 'bg-white border border-green-300 text-green-700 hover:bg-green-100';
+
+            if (type === 'visual') {
+                bgClass = 'bg-blue-50 border-blue-400';
+                textClass = 'text-blue-900';
+                btnClass = 'bg-white border border-blue-300 text-blue-700 hover:bg-blue-100';
+            }
+            
+            let html = '';
+            posts.forEach(post => {
+                if (post.trim()) {
+                    const encodedPost = encodeURIComponent(post.trim());
+                    html += `<div class="${bgClass} border-2 rounded-xl p-4 shadow-sm relative hover:shadow-md transition-shadow">
+                                <div class="whitespace-pre-wrap font-medium ${textClass}">${post.trim()}</div>
+                                <div class="mt-2 flex justify-end">
+                                    <button onclick="copyContent(decodeURIComponent('${encodedPost}'))" class="text-xs ${btnClass} px-2 py-1 rounded transition" type="button">
+                                        <i class="fas fa-copy"></i> Copy
+                                    </button>
+                                </div>
+                             </div>`;
+                }
+            });
+            container.innerHTML = html;
+        }
+
+        function renderTopSocialNav() {
+            const navContainer = document.getElementById('top-social-nav');
+            const navItems = [
+                { icon: 'fab fa-instagram', color: 'bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888]', target: 'section-visual', title: 'Instagram' },
+                { icon: 'fab fa-facebook-f', color: 'bg-[#1877F2]', target: 'section-visual', title: 'Facebook' },
+                { icon: 'fab fa-x-twitter', color: 'bg-black', target: 'section-text', title: 'X / Twitter' },
+                { icon: 'fab fa-linkedin-in', color: 'bg-[#0077b5]', target: 'section-text', title: 'LinkedIn' },
+                { icon: 'fab fa-youtube', color: 'bg-[#FF0000]', target: 'section-video-long', title: 'YouTube' },
+                { icon: 'fab fa-tiktok', color: 'bg-[#000000]', target: 'section-video-short', title: 'TikTok' },
+                { icon: 'fab fa-medium-m', color: 'bg-black', target: 'section-article', title: 'Article' },
+                { icon: 'fab fa-blogger-b', color: 'bg-[#FF5722]', target: 'section-article', title: 'Article' },
+                { isSeparator: true },
+                { icon: 'fas fa-video', color: 'bg-indigo-600', link: 'https://invideo.io/', title: 'InVideo' },
+                { icon: 'fas fa-cut', color: 'bg-gray-800', link: 'https://www.capcut.com/tools/ai-video-generator', title: 'CapCut' },
+                { icon: 'fas fa-wind', color: 'bg-purple-600', link: 'https://runwayml.com/', title: 'Runway' },
+                { icon: 'fas fa-cube', color: 'bg-blue-500', link: 'https://lumalabs.ai/dream-machine', title: 'Luma' }
+            ];
+
+            let html = '';
+            navItems.forEach(item => {
+                if (item.isSeparator) {
+                    html += `<div class="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>`;
+                } else if (item.link) {
+                    html += `
+                        <a href="${item.link}" target="_blank" class="nav-icon w-8 h-8 rounded-full text-white flex items-center justify-center shadow-sm transition-transform ${item.color}" title="Open ${item.title}">
+                            <i class="${item.icon} text-xs"></i>
+                        </a>
+                    `;
+                } else {
+                    html += `
+                        <button onclick="scrollToSection('${item.target}')" class="nav-icon w-8 h-8 rounded-full text-white flex items-center justify-center shadow-sm transition-transform ${item.color}" title="Go to ${item.title}" type="button">
+                            <i class="${item.icon} text-xs"></i>
+                        </button>
+                    `;
+                }
+            });
+
+            navContainer.innerHTML = html;
+            navContainer.classList.remove('opacity-0', 'translate-y-[-10px]');
+        }
+
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Handle Social Click based on stored content
+        function handleSocialClick(targetId, platformKey) {
+            const content = window.generatedContentStore[targetId];
+            if (!content) {
+                showToast("No content to share!");
+                return;
+            }
+
+            switch(platformKey) {
+                case 'copy':
+                    copyContent(content);
+                    break;
+                case 'facebook':
+                    copyContent(content);
+                    setTimeout(() => window.open('https://www.facebook.com/', '_blank'), 400);
+                    break;
+                case 'instagram':
+                    copyContent(content);
+                    setTimeout(() => window.open('https://www.instagram.com/', '_blank'), 400);
+                    break;
+                case 'linkedin':
+                    copyContent(content);
+                    setTimeout(() => window.open('https://www.linkedin.com/feed/', '_blank'), 400);
+                    break;
+                case 'reddit':
+                    copyContent(content);
+                    setTimeout(() => window.open('https://www.reddit.com/submit', '_blank'), 400);
+                    break;
+                case 'medium':
+                    copyContent(content);
+                    setTimeout(() => window.open('https://medium.com/new-story', '_blank'), 400);
+                    break;
+                case 'blogger':
+                    copyContent(content);
+                    setTimeout(() => window.open('https://www.blogger.com', '_blank'), 400);
+                    break;
+                case 'twitter':
+                    // Twitter intent only supports small text, use fallback if too long
+                    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(content.substring(0, 250) + '...')}`;
+                    window.open(url, '_blank');
+                    break;
+                case 'whatsapp':
+                    window.open(`https://wa.me/?text=${encodeURIComponent(content)}`, '_blank');
+                    break;
+                case 'telegram':
+                    window.open(`https://t.me/share/url?url=&text=${encodeURIComponent(content)}`, '_blank');
+                    break;
+                case 'youtube':
+                    copyContent(content);
+                    setTimeout(() => window.open('https://studio.youtube.com/', '_blank'), 400);
+                    break;
+                case 'tiktok':
+                    copyContent(content);
+                    setTimeout(() => window.open('https://www.tiktok.com/upload', '_blank'), 400);
+                    break;
+            }
+        }
+
+        function renderSocialToolbar(targetId, type = 'general') {
+            // Note: Content is now accessed via global store in handler
+            const container = document.getElementById(targetId);
+            const btnClass = "btn-social text-white px-2 py-1 rounded-md font-medium shadow-sm flex items-center gap-1 text-xs";
+
+            const platforms = {
+                copy: { name: 'Copy', icon: 'fas fa-copy', color: 'bg-gray-600' },
+                facebook: { name: 'Facebook', icon: 'fab fa-facebook-f', color: 'bg-[#1877F2]' },
+                instagram: { name: 'Instagram', icon: 'fab fa-instagram', color: 'bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888]' },
+                twitter: { name: 'X', icon: 'fab fa-x-twitter', color: 'bg-black' },
+                linkedin: { name: 'LinkedIn', icon: 'fab fa-linkedin-in', color: 'bg-[#0077b5]' },
+                whatsapp: { name: 'WhatsApp', icon: 'fab fa-whatsapp', color: 'bg-[#25D366]' },
+                telegram: { name: 'Telegram', icon: 'fab fa-telegram-plane', color: 'bg-[#0088cc]' },
+                reddit: { name: 'Reddit', icon: 'fab fa-reddit-alien', color: 'bg-[#ff4500]' },
+                youtube: { name: 'YouTube', icon: 'fab fa-youtube', color: 'bg-[#FF0000]' },
+                tiktok: { name: 'TikTok', icon: 'fab fa-tiktok', color: 'bg-[#000000]' },
+                medium: { name: 'Medium', icon: 'fab fa-medium-m', color: 'bg-black' },
+                blogger: { name: 'Blogger', icon: 'fab fa-blogger-b', color: 'bg-[#FF5722]' }
+            };
+
+            let selectedKeys = [];
+            switch(type) {
+                case 'visual': selectedKeys = ['copy', 'instagram', 'facebook', 'whatsapp']; break;
+                case 'text': selectedKeys = ['copy', 'twitter', 'linkedin', 'whatsapp']; break;
+                case 'article': selectedKeys = ['copy', 'medium', 'blogger', 'linkedin', 'facebook', 'reddit']; break;
+                case 'video_short': selectedKeys = ['copy', 'tiktok', 'instagram', 'youtube']; break;
+                case 'video_long': selectedKeys = ['copy', 'youtube']; break;
+                case 'copyOnly': selectedKeys = ['copy']; break;
+                case 'general': default: selectedKeys = ['copy', 'whatsapp', 'telegram']; break;
+            }
+
+            let alignClass = (type === 'visual' || type === 'text' || type === 'video_short' || type === 'video_long') ? 'justify-center md:justify-start' : 'justify-center';
+            let html = `<div class="flex flex-wrap items-center gap-2 mt-2 ${alignClass}">`;
+            
+            selectedKeys.forEach(key => {
+                const p = platforms[key];
+                if(p) {
+                    html += `<button onclick="handleSocialClick('${targetId}', '${key}')" class="${btnClass} ${p.color}" title="${p.name}" type="button">
+                                <i class="${p.icon}"></i> <span class="hidden sm:inline">${p.name}</span>
+                             </button>`;
+                }
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // === UTILS ===
+        function fallbackCopyTextToClipboard(text) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed"; textArea.style.left = "-9999px"; textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.focus(); textArea.select();
+            try {
+                var successful = document.execCommand('copy');
+                if(successful) showToast(currentLang === 'ar' ? "تم النسخ! ✅" : "Copied! ✅");
+                else showToast(currentLang === 'ar' ? "فشل النسخ يدوياً." : "Manual copy failed.");
+            } catch (err) { console.error('Fallback error', err); showToast("Copy failed."); }
+            document.body.removeChild(textArea);
+        }
+
+        function copyContent(text) {
+            if (!navigator.clipboard) { fallbackCopyTextToClipboard(text); return; }
+            navigator.clipboard.writeText(text).then(function() {
+                showToast(currentLang === 'ar' ? "تم النسخ! ✅" : "Copied! ✅");
+            }, function(err) { fallbackCopyTextToClipboard(text); });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            toast.classList.remove('opacity-0', 'translate-y-20');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-20');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
