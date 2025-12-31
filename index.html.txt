@@ -150,7 +150,8 @@
 </head>
 <body class="min-h-screen">
 
-    <!-- Removed Audio Tag - Replaced with Speech Synthesis in JS -->
+    <!-- Audio Element for Background Music -->
+    <audio id="gen-music" src="https://actions.google.com/sounds/v1/science_fiction/music_box_melody.ogg" loop preload="auto"></audio>
 
     <div class="flex flex-col items-center py-10 px-4">
         
@@ -165,7 +166,7 @@
 
         <main class="w-full max-w-5xl p-6 md:p-10 rounded-2xl container-card border border-gray-100 dark:border-slate-800">
             
-            <!-- Global Toggles & Social Nav -->
+            <!-- Global Toggles & Social Nav (API Key Moved Down) -->
             <section class="mb-8 p-4 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 flex flex-col lg:flex-row items-center justify-between gap-4">
                 
                 <div class="flex flex-wrap items-center gap-4 w-full justify-center lg:justify-start">
@@ -182,9 +183,9 @@
                     <!-- Separator -->
                     <div class="hidden md:block h-8 w-px bg-gray-300 dark:bg-gray-600 mx-2"></div>
 
-                    <!-- Dynamic Social Navigation -->
-                    <div id="top-social-nav" class="flex flex-wrap items-center gap-4 transition-all duration-500 opacity-0 transform translate-y-[-10px]">
-                        <!-- Icons injected via JS -->
+                    <!-- Dynamic Social Navigation (Initially Empty) -->
+                    <div id="top-social-nav" class="flex flex-wrap items-center gap-2 transition-all duration-500 opacity-0 transform translate-y-[-10px]">
+                        <!-- Icons will be injected here after generation -->
                     </div>
                 </div>
                 
@@ -211,7 +212,7 @@
                     <div id="loading-indicator" class="hidden loading-ring"></div>
                 </button>
 
-                <!-- API Key Input -->
+                <!-- API Key Input MOVED HERE -->
                 <div class="w-full flex justify-center mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
                     <div id="api-key-container" class="flex gap-2 w-full md:w-auto transition-all max-w-md">
                         <input type="password" id="api-key-input" placeholder="Gemini API Key (Optional)" class="p-2 border rounded-lg w-full text-sm text-gray-800 bg-gray-50 focus:bg-white">
@@ -232,6 +233,7 @@
                 <div class="text-center py-10 border-b-4 border-gray-100 relative group" id="section-headline">
                     <p class="text-gray-500 font-bold tracking-widest uppercase mb-2">Trend-Setting Headline</p>
                     <h2 id="result-title" class="text-4xl md:text-5xl font-black trend-title leading-tight mb-6"></h2>
+                    <!-- Social Toolbar for Headline -->
                     <div class="flex justify-center" id="toolbar-title"></div>
                 </div>
 
@@ -241,10 +243,11 @@
                         <h3 class="text-2xl font-bold text-blue-900 flex items-center gap-2">💎 Amazing Description</h3>
                     </div>
                     <div id="result-desc" class="text-lg leading-relaxed markdown-body mb-6"></div>
+                    <!-- Social Toolbar for Description -->
                     <div id="toolbar-desc"></div>
                 </div>
 
-                <!-- 3. Social Media Posts -->
+                <!-- 3. Social Media Posts (SPLIT BOXES) -->
                 <div class="grid grid-cols-1 gap-6">
                     
                     <!-- Visual (Instagram/FB) - Blue Boxes -->
@@ -253,6 +256,7 @@
                             <h3 class="text-xl font-bold text-pink-900 mb-2 text-center md:text-left">📸 Instagram & Facebook</h3>
                             <div id="toolbar-social-visual"></div>
                         </div>
+                        <!-- Container for separated posts -->
                         <div id="result-social-visual-container" class="space-y-4"></div>
                     </div>
                     
@@ -262,12 +266,13 @@
                             <h3 class="text-xl font-bold text-slate-900 mb-2 text-center md:text-left">🐦 X (Twitter) & LinkedIn</h3>
                             <div id="toolbar-social-text"></div>
                         </div>
+                        <!-- Container for separated posts -->
                         <div id="result-social-text-container" class="space-y-4"></div>
                     </div>
                 </div>
 
                 <!-- 4. Keywords -->
-                <div class="bg-gray-900 p-8 rounded-2xl text-white shadow-lg">
+                <div class="bg-gray-900 p-8 rounded-2xl text-white shadow-lg" id="section-keywords">
                     <h3 class="text-xl font-bold text-yellow-400 mb-4">🔥 Trending Keywords</h3>
                     <div id="result-keywords" class="flex flex-wrap gap-3 mb-6"></div>
                     <div id="toolbar-keywords"></div>
@@ -278,6 +283,7 @@
                     <h3 class="text-3xl font-bold text-gray-800 mb-6 text-center">🎬 Video Scripts</h3>
                     
                     <div class="grid grid-cols-1 gap-8 mb-8">
+                        <!-- Long Script (YouTube) -->
                         <div id="section-video-long">
                             <div class="mb-3">
                                 <h4 class="text-lg font-bold text-red-600 mb-2 uppercase text-center md:text-left">Long (YouTube)</h4>
@@ -286,6 +292,7 @@
                             <div id="result-script-long" class="bg-gray-50 p-4 rounded-xl h-auto text-sm border border-gray-200 markdown-body mb-4"></div>
                         </div>
 
+                        <!-- Short Script (TikTok) -->
                         <div id="section-video-short">
                             <div class="mb-3">
                                 <h4 class="text-lg font-bold text-red-600 mb-2 uppercase text-center md:text-left">Short (TikTok/Reels)</h4>
@@ -350,6 +357,11 @@
                             </div>
                             
                             <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                                <!-- Word Count Display -->
+                                <div id="word-count-display" class="hidden text-sm font-bold text-gray-600 dark:text-gray-400 px-3 py-1 border rounded bg-gray-100 dark:bg-gray-800">
+                                    0 Words
+                                </div>
+
                                 <div id="score-display" class="hidden font-black text-xl px-3 py-1 rounded-lg border"></div>
                                 <button id="check-score-btn" onclick="checkHumanScore()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2" type="button">
                                     <span>🔍 Check Score</span>
@@ -374,13 +386,19 @@
         <i class="fas fa-check-circle text-green-400"></i> <span id="toast-msg">Copied successfully!</span>
     </div>
 
-    <!-- Scroll Navigation Buttons -->
-    <div class="fixed bottom-5 right-12 z-40 flex flex-col gap-2">
-        <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all transform hover:scale-110 border border-white dark:border-slate-800" title="Scroll to Top">
-            <i class="fas fa-arrow-up text-xs"></i>
+    <!-- NEW Scroll Navigation Buttons (Vertically Centered Right) -->
+    <div class="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-3">
+        <!-- Up Arrow (Red) -->
+        <button onclick="navigateSection('up')" class="w-10 h-10 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all transform hover:scale-110 border-2 border-white dark:border-slate-800" title="Previous Section / Top">
+            <i class="fas fa-arrow-up"></i>
         </button>
-        <button onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })" class="w-8 h-8 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all transform hover:scale-110 border border-white dark:border-slate-800" title="Scroll to Bottom">
-            <i class="fas fa-arrow-down text-xs"></i>
+        <!-- Down Arrow (Blue) -->
+        <button onclick="navigateSection('down')" class="w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all transform hover:scale-110 border-2 border-white dark:border-slate-800" title="Next Section">
+            <i class="fas fa-arrow-down"></i>
+        </button>
+        <!-- Bottom Arrow (Green) -->
+        <button onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })" class="w-10 h-10 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all transform hover:scale-110 border-2 border-white dark:border-slate-800" title="Go to Bottom">
+            <i class="fas fa-angle-double-down"></i>
         </button>
     </div>
 
@@ -407,7 +425,7 @@
                 keywords: { type: "STRING", description: "10 high-volume SEO keywords separated by commas (plain text)" },
                 script_short: { type: "STRING", description: "A 30-second TikTok/Reels script (Markdown format: Scene -> Audio)" },
                 script_long: { type: "STRING", description: "A brief outline for a YouTube review video (Markdown format)" },
-                article: { type: "STRING", description: "A comprehensive, 2000-word, highly professional blog post optimizing for SEO (use H2, H3 headings). Discuss the problem and solution deeply. IMPORTANT: You MUST hide the raw affiliate URL. Use Markdown [Anchor Text](URL) format for all links." },
+                article: { type: "STRING", description: "A very long, comprehensive, detailed blog post (approx 2000 words or more) discussing the problem this product solves in great depth. Use H2, H3 headings. Write in a 100% human-like style (high burstiness, natural flow, idiomatic) from the start. IMPORTANT: You MUST hide the raw affiliate URL. Use Markdown [Anchor Text](URL) format for all links." },
             },
             propertyOrdering: ["headline", "description", "social_visual", "social_text", "keywords", "script_short", "script_long", "article"]
         };
@@ -520,6 +538,61 @@
                 humanSub.innerText = ar ? 'تأكد من أن المقال يبدو مكتوباً بواسطة بشر.' : 'Check if the article sounds human-written.';
             }
         }
+
+        // === NAVIGATION LOGIC (Next/Prev Section) ===
+        function navigateSection(direction) {
+            const sections = [
+                'section-headline', 
+                'section-description', 
+                'section-visual', 
+                'section-text', 
+                'section-keywords', 
+                'section-video', 
+                'section-article'
+            ];
+            
+            const sectionElements = sections.map(id => document.getElementById(id)).filter(el => el !== null);
+            
+            if (sectionElements.length === 0) return;
+
+            let currentIndex = -1;
+            const threshold = 150; 
+
+            for (let i = 0; i < sectionElements.length; i++) {
+                const rect = sectionElements[i].getBoundingClientRect();
+                if (rect.top >= -threshold && rect.top < window.innerHeight / 2) {
+                     currentIndex = i;
+                     break; 
+                }
+            }
+
+            if (currentIndex === -1) {
+                for (let i = 0; i < sectionElements.length; i++) {
+                    const rect = sectionElements[i].getBoundingClientRect();
+                    if (rect.top > 0) {
+                        currentIndex = i - 1; 
+                        if (currentIndex < 0) currentIndex = -1; 
+                        break;
+                    }
+                }
+                 if (currentIndex === -1 && sectionElements[sectionElements.length-1].getBoundingClientRect().top < 0) {
+                     currentIndex = sectionElements.length - 1;
+                 }
+            }
+
+            let nextIndex = direction === 'down' ? currentIndex + 1 : currentIndex - 1;
+            
+            if (nextIndex < 0) {
+                window.scrollTo({ top: 0, behavior: 'smooth' }); 
+                return;
+            }
+            if (nextIndex >= sectionElements.length) {
+                 return;
+            }
+
+            sectionElements[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
 
         // === API CALLS ===
         async function callGeminiApi(prompt, keyToUse, schema = null, retries = 5, delay = 5000) {
@@ -675,6 +748,10 @@
                 articleDiv.classList.remove('text-gray-800', 'text-human-red');
                 articleDiv.classList.add('text-human-green');
                 
+                // Update Word Count for Rewritten Text
+                const wordCount = resultText.trim().split(/\s+/).length;
+                document.getElementById('word-count-display').innerText = `${wordCount} Words`;
+
                 loader.classList.add('hidden');
                 const scoreDisplay = document.getElementById('score-display');
                 scoreDisplay.classList.remove('hidden');
@@ -693,10 +770,20 @@
 
         // === MAIN GENERATION ===
         async function generateFullCampaign() {
-            // SPEECH SYNTHESIS START
-            const utterance = new SpeechSynthesisUtterance("Start");
-            utterance.lang = 'en-US'; 
-            window.speechSynthesis.speak(utterance);
+            // Speak "Start" then play music
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance("Start");
+                utterance.lang = 'en-US'; 
+                utterance.onend = function() {
+                    const audio = document.getElementById('gen-music');
+                    if(audio) audio.play().catch(e => console.log("Audio play failed:", e));
+                };
+                window.speechSynthesis.speak(utterance);
+            } else {
+                // Fallback if speech synthesis is not supported
+                const audio = document.getElementById('gen-music');
+                if(audio) audio.play().catch(e => console.log("Audio play failed:", e));
+            }
 
             const product = document.getElementById('product-description').value;
             const link = document.getElementById('affiliate-link').value;
@@ -725,7 +812,6 @@
             document.getElementById('humanize-btn').classList.add('hidden');
             document.getElementById('top-social-nav').classList.add('opacity-0', 'translate-y-[-10px]');
             
-            // Reset colors
             const articleDiv = document.getElementById('result-article');
             articleDiv.classList.remove('text-human-green', 'text-human-red');
             articleDiv.classList.add('text-gray-800');
@@ -738,8 +824,8 @@
 
                 Constraints:
                 1. Ensure all content is in ${currentLang === 'ar' ? 'Arabic' : 'English'}.
-                2. Article: ~2000 words, highly professional, problem-solution format. optimize for SEO. Use H2, H3.
-                3. **CRITICAL**: Embed the affiliate link '${link}' naturally into the article text using Markdown [Anchor Text](${link}) format. Do NOT simply paste the raw URL.
+                2. Article: Write a VERY LONG, comprehensive, detailed blog post (approx 2000 words). Highly professional, problem-solution format. Optimize for SEO with H2, H3 headings. Use a 100% human-like style (high burstiness, natural flow, idiomatic) right from the start.
+                3. **CRITICAL**: Embed the affiliate link '${link}' naturally into the article text using Markdown [Anchor Text](${link}) format. NEVER show the raw URL.
                 4. Social Media Posts must be concise, punchy, and engaging.
                 5. **SOCIAL LINK RULE**: 
                    - For Instagram/Facebook: Do NOT put the raw URL in the text body. Use "Link in Bio" or "Check 1st Comment".
@@ -752,6 +838,12 @@
                 const result = await callGeminiApi(prompt, keyToUse, CAMPAIGN_SCHEMA);
                 
                 currentArticleText = result.article || "";
+                
+                // Calculate Word Count
+                const wordCount = currentArticleText.trim().split(/\s+/).length;
+                const wcDisplay = document.getElementById('word-count-display');
+                wcDisplay.classList.remove('hidden');
+                wcDisplay.innerText = `${wordCount} Words`;
 
                 document.getElementById('result-title').innerText = result.headline || '';
                 document.getElementById('result-desc').innerHTML = marked.parse(result.description || '');
@@ -800,6 +892,11 @@
                 console.error("Gemini Generation Error:", error);
                 showToast((currentLang === 'ar' ? "خطأ: " : "Error: ") + error.message);
             } finally {
+                const audio = document.getElementById('gen-music');
+                if(audio) {
+                    audio.pause();
+                    audio.currentTime = 0; // Reset music
+                }
                 document.getElementById('generate-button').disabled = false;
                 document.getElementById('loading-indicator').classList.add('hidden');
             }
@@ -841,11 +938,9 @@
             container.innerHTML = html;
         }
 
-        // --- RENDER TOP NAV (UPDATED: Added Video Tools Icons) ---
         function renderTopSocialNav() {
             const navContainer = document.getElementById('top-social-nav');
             const navItems = [
-                // Social Icons
                 { icon: 'fab fa-instagram', color: 'bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888]', target: 'section-visual', title: 'Instagram' },
                 { icon: 'fab fa-facebook-f', color: 'bg-[#1877F2]', target: 'section-visual', title: 'Facebook' },
                 { icon: 'fab fa-x-twitter', color: 'bg-black', target: 'section-text', title: 'X / Twitter' },
@@ -854,11 +949,7 @@
                 { icon: 'fab fa-tiktok', color: 'bg-[#000000]', target: 'section-video-short', title: 'TikTok' },
                 { icon: 'fab fa-medium-m', color: 'bg-black', target: 'section-article', title: 'Article' },
                 { icon: 'fab fa-blogger-b', color: 'bg-[#FF5722]', target: 'section-article', title: 'Article' },
-                
-                // Separator
                 { isSeparator: true },
-
-                // Video Tools Container (Wrapped)
                 { isVideoTools: true, items: [
                     { icon: 'fas fa-video', color: 'bg-indigo-600', link: 'https://invideo.io/', title: 'InVideo' },
                     { icon: 'fas fa-cut', color: 'bg-gray-800', link: 'https://www.capcut.com/tools/ai-video-generator', title: 'CapCut' },
@@ -872,7 +963,6 @@
                 if (item.isSeparator) {
                     html += `<div class="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>`;
                 } else if (item.isVideoTools) {
-                    // Render Video Tools in a container
                     html += `<div class="flex items-center gap-2 p-1 border border-indigo-200 dark:border-slate-600 rounded bg-indigo-50 dark:bg-slate-700">`;
                     item.items.forEach(vTool => {
                         html += `
